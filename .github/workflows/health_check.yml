@@ -1,0 +1,18 @@
+name: Periodic health check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  health_check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check deployed app health
+        uses: jtalk/url-health-check-action@v4
+        with:
+          url: https://ci-cd-course.onrender.com/health
+          max-attempts: 3
+          retry-delay: 5s
