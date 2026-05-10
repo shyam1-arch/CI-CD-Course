@@ -55,3 +55,31 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+
+  notify_success:
+    needs: [pipeline]
+    runs-on: ubuntu-latest
+    if: ${{ success() && github.event_name == 'push' }}
+
+    steps:
+      - name: Discord success notification
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Deployment succeeded"
+          description: "A new version was successfully deployed."
+          color: 0x00ff00
+
+  notify_failure:
+    needs: [pipeline]
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+
+    steps:
+      - name: Discord failure notification
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Build failed"
+          description: "Commit ${{ github.sha }} by ${{ github.actor }} failed."
+          color: 0xff0000
